@@ -2,7 +2,7 @@
 
 require('config.php');
 
-session_start();
+
 
 require('razorpay-php/Razorpay.php');
 use Razorpay\Api\Api;
@@ -40,6 +40,7 @@ if ($success === true)
 {
     $html = "<p>Your payment was successful</p>
              <p>Payment ID: {$_POST['razorpay_payment_id']}</p>";
+    session_abort();
 }
 else
 {
