@@ -9,7 +9,7 @@ Author URI: http://turkbox.io/
 License: MIT
 */
 
-
+session_start();
 
 /* Test: .... */
 function add_random_shit_in_content( $content ) {
@@ -76,8 +76,13 @@ function turkbox_login(){
 function turkbox_upgrade(){
     $user = wp_get_current_user();
     $redirect = $_GET['rd'];
-    return '<a href="http://localhost:8000/wp-admin/admin-post.php?action=change_role&rd='.$redirect.'">Submit</a>';
+    return '<div style = "height: 300px; width: 700px; background:rgb(220,220,220,0.8); position: relative;"><div style = "top: 0px; left: 0%; height: 100%; width: 30%; position: absolute; padding-left:6%; display: block;">WEEKLY<br><br><a href="/index.php?page_id=64&plan=weekly&rd='.$redirect.'">Buy Now</a></div><div style = "top: 0px; left: 33%; height: 100%; width: 30%; position: absolute; padding-left:6%; display: block;">MONTHLY<br><br><a href="/index.php?page_id=64&plan=monthly&rd='.$redirect.'">Buy Now</a></div><div style = "top: 0px; left: 66%; height: 100%; width: 30%; position: absolute; padding-left:6%; display: block;">YEARLY<br><br><a href="/index.php?page_id=64&plan=yearly&rd='.$redirect.'">Buy Now</a></div></div>';
+    // <a href="http://localhost:8000/wp-admin/admin-post.php?action=change_role&rd='.$redirect.'">Submit</a>
     }
+
+function turkbox_checkout() {
+    include('payment.php');
+}
 
 
     
@@ -91,17 +96,23 @@ function prefix_admin_add_foobar() {
     if ( in_array( 'subscriber', $user->roles, true ) ) {
         $user->remove_role('subscriber');
         $user->add_role('paid_subscriber');
-    }
+    };
     $user_meta=get_userdata($user->ID);
     $user_roles=$user_meta->roles; 
     wp_redirect($redirect);
     }
 
 
+
+
+
+include('Razorpay.php');
+include('verify.php');
 add_action( 'admin_post_change_role', 'prefix_admin_add_foobar' );
 add_action( 'init', 'wporg_simple_role' );
 add_filter( 'the_content', 'add_random_shit_in_content' );
 add_shortcode('turkbox_login', 'turkbox_login');
 add_shortcode('turkbox_upgrade','turkbox_upgrade');
+add_shortcode('turkbox_checkout','turkbox_checkout');
 
 ?>
