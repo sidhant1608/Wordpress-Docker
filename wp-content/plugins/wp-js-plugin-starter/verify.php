@@ -1,51 +1,16 @@
 <?php
+include("config.php");
+$razorpayPaymentId = $_POST["razorpay_payment_id"];
+$razorpaySignature = $_POST["razorpay_signature"];
+$subscriptionId = $_POST["subscription_id"];
+$rd = $_POST['redirect'];
 
-require('config.php');
+$expectedSignature = hash_hmac('sha256', $razorpayPaymentId . '|' . $subscriptionId, $keySecret);
 
-
-
-require('razorpay-php/Razorpay.php');
-use Razorpay\Api\Api;
-use Razorpay\Api\Errors\SignatureVerificationError;
-
-$success = true;
-
-$error = "Payment Failed";
-
-if (empty($_POST['razorpay_payment_id']) === false)
+if ($expectedSignature === $razorpaySignature)
 {
-    $api = new Api($keyId, $keySecret);
-
-    try
-    {
-        // Please note that the razorpay order ID must
-        // come from a trusted source (session here, but
-        // could be database or something else)
-        $attributes = array(
-            'razorpay_order_id' => $_SESSION['razorpay_order_id'],
-            'razorpay_payment_id' => $_POST['razorpay_payment_id'],
-            'razorpay_signature' => $_POST['razorpay_signature']
-        );
-
-        $api->utility->verifyPaymentSignature($attributes);
-    }
-    catch(SignatureVerificationError $e)
-    {
-        $success = false;
-        $error = 'Razorpay Error : ' . $e->getMessage();
-    }
+    echo "Payment is successful!";
+    $user = wp_get_current_user();
+    $user->add_role('paid_subscriber');
+    wp_redirect($rd);
 }
-
-if ($success === true)
-{
-    $html = "<p>Your payment was successful</p>
-             <p>Payment ID: {$_POST['razorpay_payment_id']}</p>";
-    session_abort();
-}
-else
-{
-    $html = "<p>Your payment failed</p>
-             <p>{$error}</p>";
-}
-
-echo $html;

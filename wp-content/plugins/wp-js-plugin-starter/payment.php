@@ -1,4 +1,4 @@
-<?php include('pay.php'); ?>
+<!-- 
 <div class="container">
 <div class="row">
 <div class="col-sm-12">
@@ -26,4 +26,104 @@
 </div>
 </div>
 </div>
-</div>
+</div> -->
+
+<?php
+
+$curl = curl_init();
+$plan = $_GET['plan'];
+$plan_id = '';
+$rd = $_GET['rd'];
+
+if ( $plan == 'weekly'){
+    $plan_id = 'plan_D2ZM2mDN6cBixI';
+}
+else if ($plan == 'monthly'){
+    $plan_id = 'plan_D2ZMOWnWxa2jt6';
+}
+else if ($plan == 'yearly'){
+    $plan_id = 'plan_D2ZMkURfrwwLl9';
+}
+
+curl_setopt_array($curl, array(
+  CURLOPT_URL => "https://rzp_test_AqyE3JjZFOmNJZ:xtL2qf6lF0XO5zY8ijkXQYG6@api.razorpay.com/v1/subscriptions",
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => "",
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 30,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => "POST",
+  CURLOPT_POSTFIELDS => 'plan_id='.$plan_id.'&total_count=12&customer_notify=1',
+  CURLOPT_HTTPHEADER => array(
+    "cache-control: no-cache",
+    "content-type: application/x-www-form-urlencoded",
+    "postman-token: 67d92778-3ca8-ffb4-9680-c384d115f95a"
+  ),
+));
+
+$response = curl_exec($curl);
+$err = curl_error($curl);
+
+curl_close($curl);
+
+
+$id = '';
+
+if ($err) {
+  echo "cURL Error #:" . $err;
+} else {
+    $jsonArray = json_decode($response,true);
+    $id = $jsonArray["id"];
+}
+?>
+
+<p class="text-center py-3"><button id="turkbox" class="btn btn-primary"
+ style="background-color: #4abba9 !important;">
+Buy Subscriptioin</button></p>
+
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<form name='razorpayform' action="wp-admin/admin-post.php" method="POST">
+    <input type="hidden" name ="action" value="verify_payment">
+    <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+    <input type="hidden" name="razorpay_signature"  id="razorpay_signature" >
+    <input type="hidden" name="subscription_id"  id="subscription_id" >
+    <input type="hidden" name="redirect"  id="redirect" >
+</form>
+
+<script>
+var id = "<?php echo $id?>";
+var options = {
+    "key": "rzp_test_AqyE3JjZFOmNJZ",
+    "subscription_id": id,
+    "name": "Khabar Lahariya ",
+    "description": "Subscription",
+    "handler": function (response){
+       
+    },
+    
+    "theme": {
+        "color": "#00a1f1"
+    }
+};
+
+options.handler = function (response){
+    document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+    document.getElementById('razorpay_signature').value = response.razorpay_signature;
+    document.getElementById('subscription_id').value = id;
+    document.getElementById('redirect').value = "<?php echo $rd ?>";
+    document['razorpayform'].submit();
+};
+
+var turkbox= new Razorpay(options);
+
+document.getElementById('turkbox').onclick = function(e){
+    turkbox.open();
+    e.preventDefault();
+}
+</script>
+
+
+

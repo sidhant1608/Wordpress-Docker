@@ -85,27 +85,27 @@ function turkbox_checkout() {
 }
 
 
-    
-function prefix_admin_add_foobar() {
-    $redirect = $_GET['rd'];
-    $user = wp_get_current_user();
-    if ( in_array( 'paid_subscriber', $user->roles, true ) ) {
-        $user->remove_role('paid_subscriber');
-        $user->add_role('subscriber');
-    }
-    if ( in_array( 'subscriber', $user->roles, true ) ) {
+
+function prefix_admin_verify_payment(){
+    include("config.php");
+    $razorpayPaymentId = $_POST["razorpay_payment_id"];
+    $razorpaySignature = $_POST["razorpay_signature"];
+    $subscriptionId = $_POST["subscription_id"];
+    $rd = $_POST['redirect'];
+
+    $expectedSignature = hash_hmac('sha256', $razorpayPaymentId . '|' . $subscriptionId, $keySecret);
+
+    if ($expectedSignature === $razorpaySignature)
+    {
+        $user = wp_get_current_user();
         $user->remove_role('subscriber');
         $user->add_role('paid_subscriber');
-    };
-    $user_meta=get_userdata($user->ID);
-    $user_roles=$user_meta->roles; 
-    wp_redirect($redirect);
+        wp_redirect($rd);
     }
+}
 
-
-
-
-add_action( 'admin_post_change_role', 'prefix_admin_add_foobar' );
+    
+add_action('admin_post_verify_payment','prefix_admin_verify_payment');
 add_action( 'init', 'wporg_simple_role' );
 add_filter( 'the_content', 'add_random_shit_in_content' );
 add_shortcode('turkbox_login', 'turkbox_login');
