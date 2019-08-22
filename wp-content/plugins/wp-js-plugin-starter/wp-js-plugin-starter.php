@@ -167,7 +167,13 @@ function ava_test_init() {
     wp_enqueue_script( 'script1', plugins_url( '/js/2.c285be09.chunk.js', __FILE__ ));
     wp_enqueue_script( 'script2', plugins_url( '/js/main.03a730a4.chunk.js', __FILE__ ));
     wp_enqueue_script( 'script3', plugins_url( '/js/runtime~main.a8a9905a.js', __FILE__ ));
+    $dataToBePassed = array(
+        'checkout_link'            => '/index.php?page_id='.$_SESSION['checkout_page']
+    );
     wp_register_style('mystyle',plugins_url( '/css/main.208599e9.chunk.css', __FILE__ ));
+    wp_localize_script( 'script1', 'links', $datatoBePassed );
+    wp_localize_script( 'script2', 'links', $datatoBePassed );
+    wp_localize_script( 'script3', 'links', $datatoBePassed );
     wp_enqueue_style( 'mystyle' );
 }
     
