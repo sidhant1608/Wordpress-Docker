@@ -35,15 +35,9 @@ $plan = $_GET['plan'];
 $plan_id = '';
 $rd = $_GET['rd'];
 
-if ( $plan == 'weekly'){
-    $plan_id = 'plan_D2ZM2mDN6cBixI';
-}
-else if ($plan == 'monthly'){
-    $plan_id = 'plan_D2ZMOWnWxa2jt6';
-}
-else if ($plan == 'yearly'){
-    $plan_id = 'plan_D2ZMkURfrwwLl9';
-}
+
+$plan_id = 'plan_D2ZMOWnWxa2jt6';
+
 
 curl_setopt_array($curl, array(
   CURLOPT_URL => "https://rzp_test_AqyE3JjZFOmNJZ:xtL2qf6lF0XO5zY8ijkXQYG6@api.razorpay.com/v1/subscriptions",
@@ -77,9 +71,15 @@ if ($err) {
 }
 ?>
 
+<div id = "order-table" class = "order-table" style = "width: 500px; height: 400px; border: 1px solid black; position: relative;">
+<p> Order Summary</p>
+<div style = "width: 100%; height: 50%; display: inline-block;">
+<p> Khabar Lahariya Subscription</p><p>Rs. 200</p>
+</div>
 <p class="text-center py-3"><button id="turkbox" class="btn btn-primary"
  style="background-color: #4abba9 !important;">
 Buy Subscriptioin</button></p>
+</div>
 
 
 
