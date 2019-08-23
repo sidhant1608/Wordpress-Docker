@@ -164,6 +164,7 @@ function plugin_init(){
 
 
 function ava_test_init() {
+    if ( is_single() && in_the_loop() && is_main_query() && in_category( 'turkbox-article' ) ) {
     wp_enqueue_script( 'script1', plugins_url( '/js/2.c752f13d.chunk.js', __FILE__ ));
     wp_enqueue_script( 'script2', plugins_url( '/js/main.9342e3f4.chunk.js', __FILE__ ));
     wp_enqueue_script( 'script3', plugins_url( '/js/runtime~main.a8a9905a.js', __FILE__ ));
@@ -175,6 +176,7 @@ function ava_test_init() {
     wp_localize_script( 'script2', 'links', $datatoBePassed );
     wp_localize_script( 'script3', 'links', $datatoBePassed );
     wp_enqueue_style( 'mystyle' );
+    }
 }
     
 add_action('admin_post_verify_payment','prefix_admin_verify_payment');
